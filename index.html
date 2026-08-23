@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gopika Ravi — Software Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+  :root{
+    --ink:#120a1f;
+    --paper:#f4efe4;
+    --violet:#2b0f4f;
+    --magenta:#ff2e88;
+    --citrus:#ffd23f;
+    --mint:#00e0a4;
+    --line:#120a1f;
+    --shadow:#120a1f;
+    --radius:0px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Space Grotesk',sans-serif;
+    overflow-x:hidden;
+    cursor:none;
+  }
+  ::selection{background:var(--magenta);color:var(--paper);}
+  a{color:inherit;text-decoration:none;}
+
+  /* ---------- custom cursor ---------- */
+  .cursor-dot, .cursor-ring{
+    position:fixed;top:0;left:0;
+    pointer-events:none;
+    z-index:9999;
+    transform:translate(-50%,-50%);
+    will-change:transform;
+  }
+  .cursor-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--ink);
+  }
+  .cursor-ring{
+    width:44px;height:44px;border-radius:50%;
+    border:2px solid var(--ink);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:10px;font-weight:700;letter-spacing:.05em;
+    text-transform:uppercase;
+    transition:width .25s cubic-bezier(.2,.9,.3,1), height .25s cubic-bezier(.2,.9,.3,1),
+               background .25s ease, border-color .25s ease, color .25s ease;
+  }
+  .cursor-ring.big{
+    width:96px;height:96px;
+    background:var(--magenta);
+    border-color:var(--magenta);
+    color:var(--paper);
+  }
+  .cursor-ring span{opacity:0;transition:opacity .2s ease;}
+  .cursor-ring.big span{opacity:1;}
+  @media (hover:none), (pointer:coarse){
+    .cursor-dot,.cursor-ring{display:none;}
+    body{cursor:auto;}
+  }
+
+  /* ---------- utility ---------- */
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  .brutal{
+    border:3px solid var(--ink);
+    box-shadow:8px 8px 0 var(--shadow);
+    background:var(--paper);
+  }
+  section{position:relative;padding:120px 0;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:10px;
+    padding:6px 14px;border:2px solid var(--ink);
+    background:var(--citrus);
+    margin-bottom:28px;
+  }
+  h1,h2,h3{font-family:'Unbounded',sans-serif;line-height:1.05;letter-spacing:-.01em;}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:500;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 32px;
+    background:rgba(244,239,228,.85);
+    backdrop-filter:blur(8px);
+    border-bottom:3px solid var(--ink);
+  }
+  .logo{font-family:'Unbounded',sans-serif;font-weight:800;font-size:20px;}
+  .logo em{font-style:normal;color:var(--magenta);}
+  .navlinks{display:flex;gap:28px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+  .navlinks a{position:relative;padding-bottom:3px;}
+  .navlinks a::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--magenta);transition:width .25s ease;}
+  .navlinks a:hover::after{width:100%;}
+  .navlinks{list-style:none;}
+  @media (max-width:760px){.navlinks{display:none;}}
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding-top:140px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-grid{
+    position:absolute;inset:0;
+    background-image:linear-gradient(var(--ink) 1px, transparent 1px), linear-gradient(90deg, var(--ink) 1px, transparent 1px);
+    background-size:56px 56px;
+    opacity:.06;
+    pointer-events:none;
+  }
+  .hero h1{
+    font-size:clamp(3.2rem,9vw,7.6rem);
+    font-weight:800;
+    text-transform:uppercase;
+  }
+  .hero h1 .stroke{
+    -webkit-text-stroke:2px var(--ink);
+    color:var(--paper);
+  }
+  .hero-role{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(14px,2vw,18px);
+    margin-top:24px;
+    max-width:640px;
+    color:var(--violet);
+  }
+  .hero-role .cursor-blink{
+    display:inline-block;width:9px;height:1.1em;background:var(--magenta);
+    margin-left:2px;vertical-align:text-bottom;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+  .hero-cta{margin-top:44px;display:flex;flex-wrap:wrap;gap:16px;}
+  .btn{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.04em;
+    padding:16px 28px;border:3px solid var(--ink);
+    background:var(--ink);color:var(--paper);
+    box-shadow:6px 6px 0 var(--shadow);
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+    display:inline-flex;align-items:center;gap:10px;
+  }
+  .btn.ghost{background:var(--paper);color:var(--ink);}
+  .btn:hover{transform:translate(-4px,-4px);box-shadow:10px 10px 0 var(--shadow);background:var(--magenta);color:var(--paper);border-color:var(--ink);}
+
+  /* marquee ticker */
+  .ticker-wrap{
+    border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);
+    background:var(--ink);color:var(--paper);
+    padding:16px 0;overflow:hidden;white-space:nowrap;margin-top:90px;
+  }
+  .ticker{display:inline-flex;gap:40px;animation:scroll 22s linear infinite;}
+  .ticker span{
+    font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:40px;
+  }
+  .ticker span::after{content:"✦";color:var(--citrus);}
+  @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ---------- section heads ---------- */
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-bottom:56px;}
+  .section-head h2{font-size:clamp(2.2rem,4.5vw,3.6rem);text-transform:uppercase;}
+  .section-num{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--violet);}
+
+  /* ---------- about ---------- */
+  .about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:start;}
+  @media(max-width:860px){.about-grid{grid-template-columns:1fr;}}
+  .about-text p{font-size:18px;line-height:1.7;color:var(--violet);}
+  .about-text p+p{margin-top:18px;}
+  .stat-card{padding:24px;margin-bottom:20px;}
+  .stat-card:last-child{margin-bottom:0;}
+  .stat-card .num{font-family:'Unbounded',sans-serif;font-size:2.4rem;font-weight:800;color:var(--magenta);}
+  .stat-card .label{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-top:6px;}
+
+  /* ---------- experience timeline ---------- */
+  .timeline{border-left:3px solid var(--ink);margin-left:10px;}
+  .tl-item{position:relative;padding:0 0 56px 40px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-dot{
+    position:absolute;left:-11px;top:2px;width:19px;height:19px;border-radius:50%;
+    background:var(--citrus);border:3px solid var(--ink);
+  }
+  .tl-date{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--magenta);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .tl-item h3{font-size:1.5rem;margin-bottom:4px;text-transform:uppercase;}
+  .tl-org{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--violet);margin-bottom:14px;}
+  .tl-item ul{padding-left:20px;color:var(--violet);font-size:15px;line-height:1.7;}
+
+  /* ---------- projects ---------- */
+  .proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;}
+  @media(max-width:760px){.proj-grid{grid-template-columns:1fr;}}
+  .proj-card{
+    padding:28px;display:flex;flex-direction:column;gap:14px;min-height:230px;
+    transition:transform .2s ease, box-shadow .2s ease;
+    cursor:none;
+  }
+  .proj-card:hover{transform:translate(-6px,-6px);box-shadow:14px 14px 0 var(--shadow);}
+  .proj-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .proj-tag{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 10px;border:2px solid var(--ink);text-transform:uppercase;}
+  .proj-card h3{font-size:1.4rem;text-transform:uppercase;}
+  .proj-card p{color:var(--violet);font-size:14.5px;line-height:1.6;flex:1;}
+  .proj-stack{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--magenta);text-transform:uppercase;letter-spacing:.04em;}
+  .proj-link{font-weight:700;font-size:13px;text-transform:uppercase;display:inline-flex;align-items:center;gap:8px;align-self:flex-start;}
+  .proj-link::after{content:"↗";transition:transform .2s ease;}
+  .proj-card:hover .proj-link::after{transform:translate(3px,-3px);}
+
+  /* accent tints per card */
+  .proj-card:nth-child(1){background:#ffe8f3;}
+  .proj-card:nth-child(2){background:#e6fff5;}
+  .proj-card:nth-child(3){background:#fff6d9;}
+  .proj-card:nth-child(4){background:#eee6ff;}
+  .proj-card:nth-child(5){background:#e6f2ff;}
+  .proj-card:nth-child(6){background:#ffece0;}
+
+  /* ---------- skills ---------- */
+  .skills-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
+  @media(max-width:900px){.skills-grid{grid-template-columns:repeat(2,1fr);}}
+  .skill-card{padding:22px 20px;}
+  .skill-card h4{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--magenta);margin-bottom:10px;}
+  .skill-card ul{list-style:none;}
+  .skill-card li{font-weight:600;font-size:14.5px;padding:6px 0;border-bottom:1px dashed rgba(18,10,31,.25);}
+  .skill-card li:last-child{border-bottom:none;}
+
+  /* ---------- certs / education ---------- */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  @media(max-width:860px){.two-col{grid-template-columns:1fr;}}
+  .list-card{padding:28px;}
+  .list-card h3{font-size:1.3rem;text-transform:uppercase;margin-bottom:22px;}
+  .row-item{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:2px dashed var(--ink);}
+  .row-item:last-child{border-bottom:none;}
+  .row-item .t{font-weight:700;font-size:15px;}
+  .row-item .s{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--violet);margin-top:3px;}
+  .row-item .d{font-family:'JetBrains Mono',monospace;font-size:12px;white-space:nowrap;color:var(--magenta);font-weight:600;}
+
+  /* ---------- contact ---------- */
+  .contact{background:var(--ink);color:var(--paper);}
+  .contact .eyebrow{background:var(--mint);color:var(--ink);}
+  .contact h2{font-size:clamp(2.4rem,7vw,5.4rem);text-transform:uppercase;}
+  .contact-links{margin-top:48px;display:flex;flex-direction:column;}
+  .contact-links a{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:26px 4px;border-top:2px solid rgba(244,239,228,.3);
+    font-family:'Unbounded',sans-serif;font-weight:600;font-size:clamp(18px,3vw,28px);
+    text-transform:uppercase;
+    transition:color .2s ease, padding-left .2s ease;
+  }
+  .contact-links a:last-child{border-bottom:2px solid rgba(244,239,228,.3);}
+  .contact-links a:hover{color:var(--citrus);padding-left:14px;}
+  .contact-links a .arrow{font-family:'Space Grotesk',sans-serif;font-size:16px;}
+  footer{padding:28px 0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(244,239,228,.5);}
+
+  .reveal{opacity:0;transform:translateY(40px);}
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+    .reveal{opacity:1;transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"><span>View</span></div>
+
+<nav>
+  <div class="logo">GOPIKA<em>.</em>DEV</div>
+  <ul class="navlinks">
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="wrap">
+    <div class="eyebrow">✦ Open to SDE &amp; Internship roles</div>
+    <h1>GOPIKA<br><span class="stroke">RAVI</span></h1>
+    <div class="hero-role">
+      &gt; CSE student building full-stack things that don't look like tutorials<span class="cursor-blink"></span>
+    </div>
+    <div class="hero-cta">
+      <a class="btn" href="#projects" data-cursor="big">See the work</a>
+      <a class="btn ghost" href="#contact" data-cursor="big">Let's talk</a>
+    </div>
+  </div>
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span>Java</span><span>Spring Boot</span><span>React Native</span><span>MySQL</span><span>Tailwind CSS</span><span>AWS</span><span>DSA</span><span>Git &amp; GitHub</span>
+      <span>Java</span><span>Spring Boot</span><span>React Native</span><span>MySQL</span><span>Tailwind CSS</span><span>AWS</span><span>DSA</span><span>Git &amp; GitHub</span>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">About</h2>
+      <span class="section-num">01 / origin story</span>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I'm a Computer Science undergrad at K S R College of Engineering, currently in my 6th semester with an 8.5 CGPA — aspiring software engineer with a genuine soft spot for data structures, algorithms and clean object-oriented code.</p>
+        <p>I like building things end-to-end: Spring Boot APIs on the backend, React Native / Tailwind interfaces on the front, and enough curiosity about UI motion to make my side-projects a little too extra (see: a custom cursor, a neubrutalist counter app, a glassmorphic café concept). I write code that solves real problems and try to leave every codebase a little more collaborative than I found it.</p>
+      </div>
+      <div>
+        <div class="stat-card brutal reveal"><div class="num">8.5</div><div class="label">CGPA · CSE, 6th sem</div></div>
+        <div class="stat-card brutal reveal"><div class="num">2+</div><div class="label">Internships completed</div></div>
+        <div class="stat-card brutal reveal"><div class="num">6</div><div class="label">Shipped side projects</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">Experience</h2>
+      <span class="section-num">02 / on the job</span>
+    </div>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-date">Nov 2024</div>
+        <h3>Frontend Developer Intern</h3>
+        <div class="tl-org">Corizo Company — Remote</div>
+        <ul>
+          <li>Completed structured frontend development training, building 8+ reusable UI components with HTML, CSS and JavaScript.</li>
+          <li>Reinforced best practices in component architecture and responsive styling within an Agile project workflow.</li>
+          <li>Collaborated in a cross-functional team environment, incorporating peer and mentor feedback to refine implementations and improve code quality.</li>
+        </ul>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-dot"></div>
+        <div class="tl-date">July 2024</div>
+        <h3>Web Development &amp; Data Analytics Intern</h3>
+        <div class="tl-org">Cube AI Solutions — Remote</div>
+        <ul>
+          <li>Developed and tested 5+ web application features in a live production environment — front-end development, debugging and Git version control — reducing reported UI bugs by 20%.</li>
+          <li>Performed data analysis on business datasets: cleaning, structuring, and building interactive Power BI dashboards to translate raw data into stakeholder-ready insights supporting data-driven decisions.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">Projects</h2>
+      <span class="section-num">03 / things I built</span>
+    </div>
+    <div class="proj-grid">
+
+      <div class="proj-card brutal reveal" data-cursor="big">
+        <div class="proj-top"><h3>dropSpace</h3><span class="proj-tag">JS</span></div>
+        <p>Real-time, cross-device clipboard &amp; media vault. Pair two devices with a 6-digit room code or QR scan and sync text, links, code snippets, photos or videos instantly.</p>
+        <div class="proj-stack">WebSockets · Real-time sync</div>
+        <a class="proj-link" href="https://github.com/Gopika-R2410/dropSpace" target="_blank" rel="noopener">View repo</a>
+      </div>
+
+      <div class="proj-card brutal reveal" data-cursor="big">
+        <div class="proj-top"><h3>Scholar DoodleBox</h3><span class="proj-tag">JS</span></div>
+        <p>A cozy all-in-one student productivity hub — sign in, run Pomodoro sessions, track GitHub / LeetCode / HackerRank / GeeksforGeeks progress, manage daily goals and quick notes.</p>
+        <div class="proj-stack">Productivity · API integrations</div>
+        <a class="proj-link" href="https://github.com/Gopika-R2410/Scholar_doodlebox" target="_blank" rel="noopener">View repo</a>
+      </div>
+
+      <div class="proj-card brutal reveal" data-cursor="big">
+        <div class="proj-top"><h3>Tally</h3><span class="proj-tag">HTML</span></div>
+        <p>A maximalist neubrutalist word &amp; character counter — thick borders, hard shadows, zero chill. Vanilla HTML/CSS/JS, no dependencies.</p>
+        <div class="proj-stack">Vanilla JS · Neubrutalism</div>
+        <a class="proj-link" href="https://github.com/Gopika-R2410/Tally" target="_blank" rel="noopener">View repo</a>
+      </div>
+
+      <div class="proj-card brutal reveal" data-cursor="big">
+        <div class="proj-top"><h3>FlowSync</h3><span class="proj-tag">HTML</span></div>
+        <p>An aesthetic, gamified productivity dashboard built to keep you focused and consistent — priority-tagged tasks and an integrated workflow view.</p>
+        <div class="proj-stack">Dashboard · Gamification</div>
+        <a class="proj-link" href="https://github.com/Gopika-R2410/flowsync-app" target="_blank" rel="noopener">View repo</a>
+      </div>
+
+      <div class="proj-card brutal reveal" data-cursor="big">
+        <div class="proj-top"><h3>nexus-crud</h3><span class="proj-tag">Full-stack</span></div>
+        <p>Full-stack supermarket POS &amp; inventory system with a glassmorphic Tailwind UI and a Spring Boot + MySQL backend — live stock tracking and automated deductions.</p>
+        <div class="proj-stack">Spring Boot · MySQL · Tailwind</div>
+        <a class="proj-link" href="https://github.com/Gopika-R2410/nexus-crud" target="_blank" rel="noopener">View repo</a>
+      </div>
+
+      <div class="proj-card brutal reveal" data-cursor="big">
+        <div class="proj-top"><h3>Web-Cafe</h3><span class="proj-tag">HTML</span></div>
+        <p>An interactive premium UI/UX concept — custom cursor, magnetic hover grid, glassmorphism and GSAP motion, wrapped around a café menu theme.</p>
+        <div class="proj-stack">GSAP · Custom cursor · Glassmorphism</div>
+        <a class="proj-link" href="https://github.com/Gopika-R2410/Web-Cafe" target="_blank" rel="noopener">View repo</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="reveal">Skills</h2>
+      <span class="section-num">04 / toolbox</span>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card brutal reveal">
+        <h4>Languages</h4>
+        <ul><li>Java</li><li>JavaScript</li></ul>
+      </div>
+      <div class="skill-card brutal reveal">
+        <h4>Frontend</h4>
+        <ul><li>React Native (Expo)</li><li>HTML / CSS</li><li>Tailwind CSS</li></ul>
+      </div>
+      <div class="skill-card brutal reveal">
+        <h4>Backend &amp; API</h4>
+        <ul><li>Spring Boot</li><li>Spring Data JPA</li><li>Hibernate</li></ul>
+      </div>
+      <div class="skill-card brutal reveal">
+        <h4>Databases</h4>
+        <ul><li>MySQL</li></ul>
+      </div>
+      <div class="skill-card brutal reveal">
+        <h4>Cloud &amp; Tools</h4>
+        <ul><li>AWS (Cloud Practitioner)</li><li>Git &amp; GitHub</li><li>VS Code</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="wrap">
+    <div class="two-col">
+      <div class="list-card brutal reveal">
+        <h3>Education</h3>
+        <div class="row-item">
+          <div><div class="t">K S R College of Engineering, Namakkal</div><div class="s">B.E. Computer Science &amp; Engineering · CGPA 8.5</div></div>
+          <div class="d">2023 – Present</div>
+        </div>
+        <div class="row-item">
+          <div><div class="t">Cheran Matric Hr. Sec. School, Karur</div><div class="s">Higher Secondary Certificate · 81.5%</div></div>
+          <div class="d">2023</div>
+        </div>
+        <div class="row-item">
+          <div><div class="t">Cheran Matric Hr. Sec. School, Karur</div><div class="s">SSLC · 100%</div></div>
+          <div class="d">2021</div>
+        </div>
+      </div>
+      <div class="list-card brutal reveal">
+        <h3>Certifications</h3>
+        <div class="row-item">
+          <div><div class="t">AWS Certified Cloud Practitioner</div><div class="s">CLF-C02</div></div>
+          <div class="d">Apr 2026</div>
+        </div>
+        <div class="row-item">
+          <div><div class="t">British Council Aptis General</div><div class="s">CEFR Level B2</div></div>
+          <div class="d">Aug 2024</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="wrap">
+    <div class="eyebrow">✦ Currently open to work</div>
+    <h2 class="reveal">Let's build<br>something great.</h2>
+    <div class="contact-links">
+      <a href="mailto:rgopika739@gmail.com" data-cursor="big"><span>Email</span><span class="arrow">rgopika739@gmail.com ↗</span></a>
+      <a href="https://www.linkedin.com/in/gopika-ravi-8bb160332" target="_blank" rel="noopener" data-cursor="big"><span>LinkedIn</span><span class="arrow">gopika-ravi-8bb160332 ↗</span></a>
+      <a href="https://github.com/Gopika-R2410" target="_blank" rel="noopener" data-cursor="big"><span>GitHub</span><span class="arrow">Gopika-R2410 ↗</span></a>
+      <a href="https://leetcode.com/u/Gopika_Ravi24/" target="_blank" rel="noopener" data-cursor="big"><span>LeetCode</span><span class="arrow">Gopika_Ravi24 ↗</span></a>
+      <a href="tel:+919894989889" data-cursor="big"><span>Phone</span><span class="arrow">+91 98949 89889 ↗</span></a>
+    </div>
+  </div>
+  <footer>© 2026 Gopika Ravi · Karur, Tamil Nadu · Built with a little too much love for hard shadows</footer>
+</section>
+
+<script>
+  // custom cursor
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+  if(!isTouch){
+    let mx=0,my=0, rx=0, ry=0;
+    window.addEventListener('mousemove', e=>{
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx+'px'; dot.style.top = my+'px';
+    });
+    function loop(){
+      rx += (mx-rx)*0.18; ry += (my-ry)*0.18;
+      ring.style.left = rx+'px'; ring.style.top = ry+'px';
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    document.querySelectorAll('[data-cursor="big"]').forEach(el=>{
+      el.addEventListener('mouseenter', ()=> ring.classList.add('big'));
+      el.addEventListener('mouseleave', ()=> ring.classList.remove('big'));
+    });
+  }
+
+  // scroll reveals
+  if(window.gsap && window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray('.reveal').forEach((el, i)=>{
+      gsap.to(el, {
+        opacity:1, y:0, duration:.8, ease:'power3.out',
+        delay: (i%3)*0.05,
+        scrollTrigger:{ trigger: el, start:'top 88%' }
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
